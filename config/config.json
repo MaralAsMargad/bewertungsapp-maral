@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": null,
-    "database": "itl1_einheit_2",
+    "database": "itl1_bewertungsapp",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
