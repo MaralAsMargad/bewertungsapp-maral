@@ -47,23 +47,47 @@ router.get('/:id/statistik', async (req, res) => {
   }
 });
 
-// POST /projects - Neues Projekt anlegen
+// POST /project - Neues Projekt anlegen
 router.post('/', async (req, res) => {
   try {
-    const { teamId, Titel, Beschreibung, Praesentiert_am } = req.body;
-    if (!teamId || !Titel) {
-      return res.status(400).json({ error: 'teamId und Titel sind Pflichtfelder' });
+    const { teamId, titel, beschreibung, praesentiertAm } = req.body;
+
+    if (
+      !Number.isSafeInteger(Number(teamId)) ||
+      Number(teamId) <= 0 ||
+      typeof titel !== 'string' ||
+      !titel.trim()
+    ) {
+      return res.status(400).json({
+        error: 'teamId und titel sind Pflichtfelder'
+      });
     }
 
     const teamExists = await Team.findByPk(teamId);
-    if (!teamExists) return res.status(404).json({ error: 'Das angegebene Team existiert nicht' });
 
-    const project = await Project.create({ teamId, Titel, Beschreibung, Praesentiert_am });
+    if (!teamExists) {
+      return res.status(404).json({
+        error: 'Das angegebene Team existiert nicht'
+      });
+    }
+
+    const project = await Project.create({
+      teamId,
+      titel: titel.trim(),
+      beschreibung,
+      praesentiertAm
+    });
+
     res.status(201).json(project);
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Fehler beim Erstellen des Projekts:', error);
+    res.status(500).json({
+      error: 'Projekt konnte nicht erstellt werden'
+    });
   }
 });
+
 
 // PUT /projects/:id - Projekt aktualisieren
 router.put('/:id', async (req, res) => {

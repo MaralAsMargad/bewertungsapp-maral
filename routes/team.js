@@ -1,66 +1,148 @@
+
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
 const { Team, Member, Project } = db;
 
-// GET /teams - Alle Teams abrufen (inkl. Mitglieder und Projekte)
+// Hilfsfunktion: Prüft, ob eine ID eine positive ganze Zahl ist
+function istGueltigeId(id) {
+  return /^[1-9]\d*$/.test(id) &&
+    Number.isSafeInteger(Number(id));
+}
+
+// GET /team - Alle Teams abrufen
 router.get('/', async (req, res) => {
-  console.log("GET /team wurde aufgerufen..."); // Zum Testen
   try {
     const teams = await Team.findAll();
-    res.json(teams);
+    res.status(200).json(teams);
   } catch (error) {
-    console.error("Fehler bei DB-Abfrage:", error);
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Interner Serverfehler' });
   }
 });
 
-// GET /teams/:id - Ein Team per ID abrufen
+// GET /team/:id - Einzelnes Team abrufen
 router.get('/:id', async (req, res) => {
+  if (!istGueltigeId(req.params.id)) {
+    return res.status(400).json({
+      error: 'Ungültige Team-ID'
+    });
+  }
+
   try {
-    const team = await Team.findByPk(req.params.id, { include: [Member, Project] });
-    if (!team) return res.status(404).json({ error: 'Team nicht gefunden' });
-    res.json(team);
+    const team = await Team.findByPk(req.params.id, {
+      include: [Member, Project]
+    });
+
+    if (!team) {
+      return res.status(404).json({
+        error: 'Team nicht gefunden'
+      });
+    }
+
+    res.status(200).json(team);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Interner Serverfehler' });
   }
 });
 
-// POST /teams - Neues Team anlegen
+// POST /team - Neues Team erstellen
 router.post('/', async (req, res) => {
   try {
-    const { Name, Klasse } = req.body;
-    if (!Name || !Klasse) {
-      return res.status(400).json({ error: 'Name und Klasse sind Pflichtfelder' });
+    const { name, klasse } = req.body;
+
+    if (
+      typeof name !== 'string' ||
+      !name.trim() ||
+      typeof klasse !== 'string' ||
+      !klasse.trim()
+    ) {
+      return res.status(400).json({
+        error: 'name und klasse sind Pflichtfelder'
+      });
     }
-    const team = await Team.create({ Name, Klasse });
+
+    const team = await Team.create({
+      name: name.trim(),
+      klasse: klasse.trim()
+    });
+
     res.status(201).json(team);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Interner Serverfehler' });
   }
 });
 
-// PUT /teams/:id - Team aktualisieren
+// PUT /team/:id - Team aktualisieren
 router.put('/:id', async (req, res) => {
+  if (!istGueltigeId(req.params.id)) {
+    return res.status(400).json({
+      error: 'Ungültige Team-ID'
+    });
+  }
+
   try {
     const team = await Team.findByPk(req.params.id);
-    if (!team) return res.status(404).json({ error: 'Team nicht gefunden' });
-    await team.update(req.body);
-    res.json(team);
+
+    if (!team) {
+      return res.status(404).json({
+        error: 'Team nicht gefunden'
+      });
+    }
+
+    const { name, klasse } = req.body;
+    const daten = {};
+
+    if (name !== undefined) {
+      if (typeof name !== 'string' || !name.trim()) {
+        return res.status(400).json({
+          error: 'Ungültiger Name'
+        });
+      }
+      daten.name = name.trim();
+    }
+
+    if (klasse !== undefined) {
+      if (typeof klasse !== 'string' || !klasse.trim()) {
+        return res.status(400).json({
+          error: 'Ungültige Klasse'
+        });
+      }
+      daten.klasse = klasse.trim();
+    }
+
+    await team.update(daten);
+    res.status(200).json(team);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Interner Serverfehler' });
   }
 });
 
-// DELETE /teams/:id - Team löschen
+// DELETE /team/:id - Team löschen
 router.delete('/:id', async (req, res) => {
+  if (!istGueltigeId(req.params.id)) {
+    return res.status(400).json({
+      error: 'Ungültige Team-ID'
+    });
+  }
+
   try {
     const team = await Team.findByPk(req.params.id);
-    if (!team) return res.status(404).json({ error: 'Team nicht gefunden' });
+
+    if (!team) {
+      return res.status(404).json({
+        error: 'Team nicht gefunden'
+      });
+    }
+
     await team.destroy();
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Interner Serverfehler' });
   }
 });
 

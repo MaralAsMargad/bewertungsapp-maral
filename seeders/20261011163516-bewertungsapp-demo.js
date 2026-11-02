@@ -7,8 +7,8 @@ module.exports = {
 
     // 1. Teams
     await queryInterface.bulkInsert('Teams', [
-      { name: 'Team Blockchain', klasse: '4AHITL', createdAt: now, updatedAt: now },
-      { name: 'Team RoboArm', klasse: '4AHITL', createdAt: now, updatedAt: now }
+      { Name: 'Team Blockchain', Klasse: '4AHITL', createdAt: now, updatedAt: now },
+      { Name: 'Team RoboArm', Klasse: '4AHITL', createdAt: now, updatedAt: now }
     ]);
 
     // 2. Members
@@ -19,8 +19,8 @@ module.exports = {
 
     // 3. Projects (praesentiertAm als klarer String YYYY-MM-DD)
     await queryInterface.bulkInsert('Projects', [
-      { teamId: 1, titel: 'Dezentrale Wahl-App', beschreibung: 'Abstimmungssystem auf Basis einer Blockchain', praesentiertAm: '2026-06-12', createdAt: now, updatedAt: now },
-      { teamId: 2, titel: 'Autonomer Greifarm', beschreibung: 'Robotikarm mit Bilderkennung', praesentiertAm: '2026-06-12', createdAt: now, updatedAt: now }
+      { teamId: 1, Titel: 'Dezentrale Wahl-App', Beschreibung: 'Abstimmungssystem auf Basis einer Blockchain', praesentiertAm: '2026-06-12', createdAt: now, updatedAt: now },
+      { teamId: 2, Titel: 'Autonomer Greifarm', Beschreibung: 'Robotikarm mit Bilderkennung', praesentiertAm: '2026-06-12', createdAt: now, updatedAt: now }
     ]);
 
     // 4. Criteria
@@ -38,9 +38,9 @@ module.exports = {
 
     // 6. Evaluations
     await queryInterface.bulkInsert('Evaluations', [
-      { projectId: 1, criterionId: 1, jurorId: 1, score: 8, comment: 'Konzept klar erklärt', createdAt: now, updatedAt: now },
-      { projectId: 1, criterionId: 2, jurorId: 1, score: 7, comment: 'Etwas zu textlastige Folien', createdAt: now, updatedAt: now },
-      { projectId: 2, criterionId: 3, jurorId: 2, score: 9, comment: 'Saubere Hardware-Dokumentation', createdAt: now, updatedAt: now }
+      { projectId: 1, criterionId: 1, jurorId: 1, Score: 8, Comment: 'Konzept klar erklärt', createdAt: now, updatedAt: now },
+      { projectId: 1, criterionId: 2, jurorId: 1, Score: 7, Comment: 'Etwas zu textlastige Folien', createdAt: now, updatedAt: now },
+      { projectId: 2, criterionId: 3, jurorId: 2, Score: 9, Comment: 'Saubere Hardware-Dokumentation', createdAt: now, updatedAt: now }
     ]);
   },
 

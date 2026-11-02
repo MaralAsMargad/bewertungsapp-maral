@@ -1,0 +1,545 @@
+﻿{
+    "info":  {
+                 "name":  "Bewertungsapp - Einheit 5",
+                 "description":  "API-Tests fuer Team, Project, Evaluation und Auswertung",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+             },
+    "item":  [
+                 {
+                     "name":  "01 - Team",
+                     "item":  [
+                                  {
+                                      "name":  "GET - Alle Teams",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseUrl}}/team"
+                                                  },
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Status ist 200\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "pm.test(\u0027Antwort ist ein Array\u0027, function () {",
+                                                                                    "    pm.expect(pm.response.json()).to.be.an(\u0027array\u0027);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "pm.test(\u0027Teams enthalten die richtigen Felder\u0027, function () {",
+                                                                                    "    pm.response.json().forEach(team =\u003e {",
+                                                                                    "        pm.expect(team).to.have.property(\u0027id\u0027);",
+                                                                                    "        pm.expect(team).to.have.property(\u0027name\u0027);",
+                                                                                    "        pm.expect(team).to.have.property(\u0027klasse\u0027);",
+                                                                                    "    });",
+                                                                                    "});"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\"name\":\"Team Newman Test\",\"klasse\":\"4AHITL\"}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseUrl}}/team",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "POST - Team erstellen",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Team wurde erstellt\u0027, () =\u003e pm.expect(pm.response.code).to.be.oneOf([200, 201]));",
+                                                                                    "const team = pm.response.json();",
+                                                                                    "pm.test(\u0027Team-ID vorhanden\u0027, () =\u003e pm.expect(team.id).to.be.a(\u0027number\u0027));",
+                                                                                    "if (team.id) pm.environment.set(\u0027testTeamId\u0027, team.id);"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseUrl}}/team/{{testTeamId}}"
+                                                  },
+                                      "name":  "GET - Team nach ID",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Status ist 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                                    "pm.test(\u0027Richtiges Team\u0027, () =\u003e pm.expect(pm.response.json().name).to.eql(\u0027Team Newman Test\u0027));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\"name\":\"Team Newman Aktualisiert\",\"klasse\":\"4BHITL\"}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "PUT",
+                                                      "url":  "{{baseUrl}}/team/{{testTeamId}}",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "PUT - Team aktualisieren",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Status ist 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                                    "pm.test(\u0027Name aktualisiert\u0027, () =\u003e pm.expect(pm.response.json().name).to.eql(\u0027Team Newman Aktualisiert\u0027));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "url":  "{{baseUrl}}/team/{{testTeamId}}"
+                                                  },
+                                      "name":  "DELETE - Team löschen",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Status ist 204\u0027, () =\u003e pm.response.to.have.status(204));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseUrl}}/team/{{testTeamId}}"
+                                                  },
+                                      "name":  "GET - Gelöschtes Team",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Gelöschtes Team liefert 404\u0027, () =\u003e pm.response.to.have.status(404));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseUrl}}/team/abc"
+                                                  },
+                                      "name":  "GET - Ungültige Team-ID",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Ungültige ID liefert 400\u0027, () =\u003e pm.response.to.have.status(400));",
+                                                                                    "pm.test(\u0027Fehlermeldung vorhanden\u0027, () =\u003e pm.expect(pm.response.json().error).to.be.a(\u0027string\u0027));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\"klasse\":\"4AHITL\"}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseUrl}}/team",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "POST - Team ohne Namen",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Fehlender Name liefert 400\u0027, () =\u003e pm.response.to.have.status(400));",
+                                                                                    "pm.test(\u0027Fehlermeldung vorhanden\u0027, () =\u003e pm.expect(pm.response.json().error).to.be.a(\u0027string\u0027));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "02 - Project",
+                     "item":  [
+                                  {
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseUrl}}/project"
+                                                  },
+                                      "name":  "GET - Alle Projekte",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Status ist 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                                    "pm.test(\u0027Antwort ist ein Array\u0027, () =\u003e pm.expect(pm.response.json()).to.be.an(\u0027array\u0027));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\"teamId\":13,\"titel\":\"Projekt Newman Test\",\"beschreibung\":\"Automatisierter API-Test\",\"praesentiertAm\":\"2026-11-02\"}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseUrl}}/project",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "POST - Projekt erstellen",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Projekt wurde erstellt\u0027, () =\u003e pm.response.to.have.status(201));",
+                                                                                    "const projekt = pm.response.json();",
+                                                                                    "pm.test(\u0027Projekt-ID vorhanden\u0027, () =\u003e pm.expect(projekt.id).to.be.a(\u0027number\u0027));",
+                                                                                    "if (projekt.id) pm.environment.set(\u0027testProjectId\u0027, projekt.id);"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseUrl}}/project/{{testProjectId}}"
+                                                  },
+                                      "name":  "GET - Projekt nach ID",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Status ist 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                                    "pm.test(\u0027Richtiges Projekt\u0027, () =\u003e pm.expect(pm.response.json().titel).to.eql(\u0027Projekt Newman Test\u0027));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\"titel\":\"Projekt Newman Aktualisiert\",\"beschreibung\":\"Aktualisierte Beschreibung\"}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "PUT",
+                                                      "url":  "{{baseUrl}}/project/{{testProjectId}}",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "PUT - Projekt aktualisieren",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Status ist 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                                    "pm.test(\u0027Titel aktualisiert\u0027, () =\u003e pm.expect(pm.response.json().titel).to.eql(\u0027Projekt Newman Aktualisiert\u0027));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "url":  "{{baseUrl}}/project/{{testProjectId}}"
+                                                  },
+                                      "name":  "DELETE - Projekt löschen",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Status ist 204\u0027, () =\u003e pm.response.to.have.status(204));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseUrl}}/project/{{testProjectId}}"
+                                                  },
+                                      "name":  "GET - Gelöschtes Projekt",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Gelöschtes Projekt liefert 404\u0027, () =\u003e pm.response.to.have.status(404));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\"teamId\":13,\"beschreibung\":\"Titel fehlt\"}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseUrl}}/project",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "POST - Projekt ohne Titel",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Fehlender Titel liefert 400\u0027, () =\u003e pm.response.to.have.status(400));",
+                                                                                    "pm.test(\u0027Fehlermeldung vorhanden\u0027, () =\u003e pm.expect(pm.response.json().error).to.be.a(\u0027string\u0027));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "03 - Evaluation",
+                     "item":  [
+                                  {
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseUrl}}/evaluation"
+                                                  },
+                                      "name":  "GET - Alle Bewertungen",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Status ist 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                                    "pm.test(\u0027Antwort ist ein Array\u0027, () =\u003e pm.expect(pm.response.json()).to.be.an(\u0027array\u0027));",
+                                                                                    "pm.test(\u0027Bewertungen enthalten Score\u0027, () =\u003e {",
+                                                                                    "    pm.response.json().forEach(e =\u003e pm.expect(e).to.have.property(\u0027score\u0027));",
+                                                                                    "});"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "body":  {
+                                                                   "raw":  "{\"projectId\":9,\"criterionId\":12,\"jurorId\":7,\"score\":15,\"comment\":\"Negativtest Newman\"}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               },
+                                                                   "mode":  "raw"
+                                                               },
+                                                      "method":  "POST",
+                                                      "url":  "{{baseUrl}}/evaluation",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ]
+                                                  },
+                                      "name":  "POST - Score zu hoch",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Zu hoher Score liefert 400\u0027, () =\u003e pm.response.to.have.status(400));",
+                                                                                    "pm.test(\u0027Korrekte Fehlermeldung\u0027, () =\u003e pm.expect(pm.response.json().error).to.eql(\u0027Score darf maximal 10 sein\u0027));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseUrl}}/evaluation"
+                                                  },
+                                      "name":  "GET - Bewertungen nach Negativtest",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Status ist 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                                    "pm.test(\u0027Antwort ist ein Array\u0027, () =\u003e pm.expect(pm.response.json()).to.be.an(\u0027array\u0027));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "04 - Auswertung",
+                     "item":  [
+                                  {
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseUrl}}/project/9/statistik"
+                                                  },
+                                      "name":  "GET - Projektstatistik",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Status ist 200\u0027, () =\u003e pm.response.to.have.status(200));",
+                                                                                    "const statistik = pm.response.json();",
+                                                                                    "pm.test(\u0027Antwort ist ein Array\u0027, () =\u003e pm.expect(statistik).to.be.an(\u0027array\u0027));",
+                                                                                    "pm.test(\u0027Drei Kriterien vorhanden\u0027, () =\u003e pm.expect(statistik).to.have.lengthOf(3));",
+                                                                                    "pm.test(\u0027Durchschnittswerte stimmen\u0027, () =\u003e {",
+                                                                                    "    const werte = Object.fromEntries(statistik.map(e =\u003e [e.criterionId, Number(e.durchschnittsScore)]));",
+                                                                                    "    pm.expect(werte[10]).to.eql(8);",
+                                                                                    "    pm.expect(werte[11]).to.eql(7);",
+                                                                                    "    pm.expect(werte[12]).to.eql(8);",
+                                                                                    "});",
+                                                                                    "pm.test(\u0027Gewichtungen vorhanden\u0027, () =\u003e {",
+                                                                                    "    statistik.forEach(e =\u003e {",
+                                                                                    "        pm.expect(e.Criterion).to.have.property(\u0027Weight\u0027);",
+                                                                                    "    });",
+                                                                                    "});"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  },
+                                  {
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{baseUrl}}/project/99999/statistik"
+                                                  },
+                                      "name":  "GET - Statistik unbekanntes Projekt",
+                                      "event":  [
+                                                    {
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Unbekanntes Projekt liefert 404\u0027, () =\u003e pm.response.to.have.status(404));",
+                                                                                    "pm.test(\u0027Korrekte Fehlermeldung\u0027, () =\u003e {",
+                                                                                    "    pm.expect(pm.response.json().error).to.eql(\u0027Projekt nicht gefunden\u0027);",
+                                                                                    "});"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   },
+                                                        "listen":  "test"
+                                                    }
+                                                ]
+                                  }
+                              ]
+                 }
+             ]
+}
