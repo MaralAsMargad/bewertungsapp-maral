@@ -5,10 +5,12 @@ const { Team, Member, Project } = db;
 
 // GET /teams - Alle Teams abrufen (inkl. Mitglieder und Projekte)
 router.get('/', async (req, res) => {
+  console.log("GET /team wurde aufgerufen..."); // Zum Testen
   try {
-    const teams = await Team.findAll({ include: [Member, Project] });
+    const teams = await Team.findAll();
     res.json(teams);
   } catch (error) {
+    console.error("Fehler bei DB-Abfrage:", error);
     res.status(500).json({ error: error.message });
   }
 });
