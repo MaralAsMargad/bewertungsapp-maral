@@ -1,0 +1,44 @@
+
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Bewertungsapp</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <h1>Projekte</h1>
+  <p>Alle Projekte und ihre Teams im Überblick.</p>
+
+  <ion-button expand="block" fill="outline" (click)="ladeProjekte()">
+    <ion-icon name="refresh-outline" slot="start"></ion-icon>
+    Aktualisieren
+  </ion-button>
+
+  <div *ngIf="loading" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Projekte werden geladen...</p>
+  </div>
+
+  <ion-text color="danger" *ngIf="fehler">
+    <p>{{ fehler }}</p>
+  </ion-text>
+
+  <ion-list *ngIf="!loading && !fehler">
+    <ion-item
+      *ngFor="let projekt of projekte"
+      [routerLink]="['/projekt-detail', projekt.id]"
+      detail="true"
+    >
+      <ion-label>
+        <h2>{{ projekt.titel }}</h2>
+        <p>{{ projekt.Team?.name || 'Kein Team' }}</p>
+        <p>Klasse: {{ projekt.Team?.klasse || '–' }}</p>
+        <p>Bewertungen: {{ projekt.Evaluations?.length || 0 }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <p *ngIf="!loading && !fehler && projekte.length === 0">
+    Keine Projekte vorhanden.
+  </p>
+</ion-content>

@@ -1,0 +1,101 @@
+
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button
+        defaultHref="/projekte-liste">
+      </ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Projektdetails</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Ladeanzeige -->
+  <div *ngIf="loading" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Projekt wird geladen...</p>
+  </div>
+
+  <!-- Fehlermeldung -->
+  <ion-text color="danger" *ngIf="fehler">
+    <p>{{ fehler }}</p>
+  </ion-text>
+
+  <!-- Projektdaten -->
+  <div *ngIf="projekt && !loading">
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>Projekt #{{ projekt.id }}</ion-card-subtitle>
+        <ion-card-title>{{ projekt.titel }}</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p>{{ projekt.beschreibung }}</p>
+
+        <ion-item lines="none">
+          <ion-icon
+            name="people-outline"
+            slot="start">
+          </ion-icon>
+
+          <ion-label>
+            <h3>Team</h3>
+            <p>{{ projekt.Team?.name || 'Kein Team' }}</p>
+            <p>Klasse: {{ projekt.Team?.klasse || '–' }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-icon
+            name="calendar-outline"
+            slot="start">
+          </ion-icon>
+
+          <ion-label>
+            <h3>Präsentationsdatum</h3>
+            <p>
+              {{ projekt.praesentiertAm | date:'dd.MM.yyyy' }}
+            </p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Bewertungen -->
+    <h2 class="ion-padding-start">
+      Bewertungen ({{ projekt.Evaluations?.length || 0 }})
+    </h2>
+
+    <ion-card *ngFor="let bewertung of projekt.Evaluations">
+      <ion-card-header>
+        <ion-card-subtitle>
+          Kriterium #{{ bewertung.criterionId }}
+        </ion-card-subtitle>
+
+        <ion-card-title>
+          {{ bewertung.score }} Punkte
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p>{{ bewertung.comment || 'Kein Kommentar vorhanden.' }}</p>
+
+        <ion-note>
+          Juror-ID: {{ bewertung.jurorId }}
+        </ion-note>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf="!projekt.Evaluations?.length">
+      <ion-card-content>
+        Für dieses Projekt sind noch keine Bewertungen vorhanden.
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+
+</ion-content>
